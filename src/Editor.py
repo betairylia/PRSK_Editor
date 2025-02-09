@@ -3,6 +3,7 @@ from PyQt5.QtGui import QBrush, QColor
 from PyQt5.QtCore import Qt, QSize
 import copy
 import math
+import json
 
 from Dictionary import characterDict
 
@@ -195,6 +196,53 @@ class Editor():
         with open(filepath, 'w', encoding='UTF-8') as f:
             f.write(outTalk)
             f.close()
+
+    def saveJson(self, originalJson, filepath):
+
+        outJson = copy.deepcopy(originalJson)
+
+        currentDst = 0
+
+        for srci, srctalk in enumerate(self.srctalks):
+
+            dsts = []
+            while currentDst < len(self.dsttalks) and self.dsttalks[currentDst]['idx'] - 1 <= srci:
+                dsts.append(currentDst)
+                currentDst += 1
+
+            outTalk = '\n'.join([self.dsttalks[dsti]['text'] for dsti in dsts])
+            outTalk = outTalk.rstrip()
+
+            # Replace text body
+            srcPath = srctalk['refPath']
+            if srcPath is None:
+                continue
+
+            outObj = outJson
+            for p in srcPath[:-1]:
+                outObj = outObj[p]
+            
+            outObj[srcPath[-1]] = outTalk
+
+            # Replace speaker
+            srcPath = srctalk['speakerRefPath']
+            if srcPath is None:
+                continue
+
+            outObj = outJson
+            for p in srcPath[:-1]:
+                outObj = outObj[p]
+            
+            postfix = outObj[srcPath[-1]].split("_")
+            if len(postfix) > 1:
+                postfix = "_".join(postfix[1:])
+            else:
+                postfix = ""
+
+            outObj[srcPath[-1]] = self.dsttalks[dsts[0]]['speaker'] + postfix
+
+        with open(filepath, 'w', encoding='UTF-8') as f:
+            json.dump(outJson, f, indent=2, ensure_ascii=False)
 
     def fillTableLine(self, row, talk):
         self.table.blockSignals(True)

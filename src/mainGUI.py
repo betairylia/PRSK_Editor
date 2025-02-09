@@ -115,8 +115,13 @@ class Ui_SekaiText(object):
 
         self.pushButtonClear = QtWidgets.QPushButton(self.centralwidget)
         self.pushButtonClear.setFixedSize(QtCore.QSize(60, 30))
-        self.pushButtonClear.setObjectName("pushButton")
+        self.pushButtonClear.setObjectName("pushButtonClear")
         self.horizontalLayout_3.addWidget(self.pushButtonClear)
+
+        self.pushButtonOutputJson = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButtonOutputJson.setFixedSize(QtCore.QSize(60, 30))
+        self.pushButtonOutputJson.setObjectName("pushButtonOutputJson")
+        self.horizontalLayout_3.addWidget(self.pushButtonOutputJson)
 
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
         self.label_3.setText("")
@@ -404,6 +409,7 @@ class Ui_SekaiText(object):
         self.pushButtonOpen.setText(_translate("SekaiText", u"打开"))
         self.pushButtonSave.setText(_translate("SekaiText", u"保存"))
         self.pushButtonClear.setText(_translate("SekaiText", u"清空"))
+        self.pushButtonOutputJson.setText(_translate("SekaiText", u"JSON"))
         self.checkBoxShowFlashback.setText(_translate("SekaiText", u"标记闪回"))
         # self.checkBoxShowFlashback.setChecked(True)
         self.checkBoxSyncScroll.setText(_translate("SekaiText", u"同步滚动"))

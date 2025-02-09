@@ -73,6 +73,8 @@ class mainForm(qw.QMainWindow, Ui_SekaiText):
             logging.warning("Setting File not Exists: {}".format(settingpath))
         if 'textdir' not in self.setting:
             self.setting['textdir'] = self.datadir
+        if 'jsonoutdir' not in self.setting:
+            self.setting['jsonoutdir'] = self.datadir
         if 'syncScroll' not in self.setting:
             self.setting['syncScroll'] = False
         if 'showFlashback' not in self.setting:
@@ -120,6 +122,7 @@ class mainForm(qw.QMainWindow, Ui_SekaiText):
         self.pushButtonOpen.clicked.connect(self.openText)
         self.pushButtonSave.clicked.connect(self.saveText)
         self.pushButtonClear.clicked.connect(self.clearText)
+        self.pushButtonOutputJson.clicked.connect(self.outputJson)
         # self.pushButtonDebug.clicked.connect(self.alignRowsHeight)
         self.checkBoxSyncScroll.stateChanged.connect(self.toggleSyncedMode)
         self.checkBoxShowFlashback.stateChanged.connect(self.toggleFlashback)
@@ -215,6 +218,7 @@ class mainForm(qw.QMainWindow, Ui_SekaiText):
                 self.srcText = JsonLoader(jsonpath, self.tableWidgetSrc, fontSize=self.fontSize, flashbackAnalyzer=self.flashback)
                 self.toggleFlashback(self.checkBoxShowFlashback.isChecked())
                 logging.info("Json File Loaded: " + jsonpath)
+                self.loadedJsonPath = jsonpath
             except BaseException:
                 logging.error("Fail to Load Json File: " + jsonpath)
                 exc_type, exc_value, exc_traceback_obj = sys.exc_info()
@@ -696,6 +700,31 @@ class mainForm(qw.QMainWindow, Ui_SekaiText):
                     exc_type, exc_value, exc_traceback_obj, file=f)
             qw.QMessageBox.warning(
                 self, "", u"saveText错误\n请将“setting\\log.txt发给弃子”")
+
+    def outputJson(self):
+        try:
+            jsonPath = osp.join(
+                self.setting['jsonoutdir'], self.dstfilename[:-3] + "json")
+            jsonPath, _ = qw.QFileDialog.getSaveFileName(
+                self, u"保存文件", jsonPath, "JSON Files (*.json)")
+
+            if not jsonPath:
+                return
+            self.setting['jsonoutdir'] = osp.dirname(jsonPath)
+            # self.isNewFile = False
+
+            self.dstText.saveJson(self.srcText.fulldatacache, jsonPath)
+            # self.setWindowTitle("{} Sekai Text".format(self.dstfilename))
+            # self.saved = True
+            # self.isNewFile = False
+
+        except BaseException:
+            exc_type, exc_value, exc_traceback_obj = sys.exc_info()
+            with open(loggingPath, 'a') as f:
+                traceback.print_exception(
+                    exc_type, exc_value, exc_traceback_obj, file=f)
+            qw.QMessageBox.warning(
+                self, "", u"outputJSON错误\n请将“setting\\log.txt发给弃子”")
 
     def closeEvent(self, event):
         if not self.checkSave():

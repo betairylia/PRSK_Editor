@@ -38,6 +38,7 @@ class JsonLoader():
 
         with open(path, 'r', encoding='UTF-8') as f:
             fulldata = json.load(f)
+            self.fulldatacache = fulldata
         
         self.scenario_id = fulldata['ScenarioId']
 
@@ -62,6 +63,8 @@ class JsonLoader():
                     'speaker': speaker,
                     'text': text.rstrip(),
                     'voices': voices,
+                    'refPath': ['TalkData', snippet['ReferenceIndex'], 'Body'],
+                    'speakerRefPath': ['TalkData', snippet['ReferenceIndex'], 'WindowDisplayName']
                 })
 
                 row = self.table.rowCount()
@@ -92,6 +95,8 @@ class JsonLoader():
                     self.talks.append({
                         'speaker': '',
                         'text': '',
+                        'refPath': None,
+                        'speakerRefPath': None,
                     })
 
                     row = self.table.rowCount()
@@ -115,6 +120,8 @@ class JsonLoader():
                     self.talks.append({
                         'speaker': speaker,
                         'text': text,
+                        'refPath': ['SpecialEffectData', snippet['ReferenceIndex'], 'StringVal'],
+                        'speakerRefPath': None,
                     })
 
                     row = self.table.rowCount()
@@ -125,6 +132,8 @@ class JsonLoader():
                     self.talks.append({
                         'speaker': '',
                         'text': '',
+                        'refPath': None,
+                        'speakerRefPath': None,
                     })
 
                     row = self.table.rowCount()
