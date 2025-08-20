@@ -1103,6 +1103,16 @@ class ListManager():
                             self.chapterScenario.append("")
 
         return storyChapter
+    
+    # Replace event ID in chapter_ids with internal event ID instead (when event ID exists in chapterID).
+    def processChapterID(self, eventId, chapter_ids):
+        try:
+            ev_kdyicrID = int(chapter_ids[0])
+            ev_ep = int(chapter_ids[1])
+            if len(chapter_ids) == 2 and ev_kdyicrID > 0 and ev_ep > 0 and ev_kdyicrID == self.events[eventId-1]['kdyicr_id']:
+                return [str(eventId), *chapter_ids[1:]]
+        except ValueError:
+            return chapter_ids
 
     def getJsonPath(self, storyType, sort, storyIdx, chapterIdx, source):
         jsonurl = ""
@@ -1158,7 +1168,8 @@ class ListManager():
                 jsonurl = baseUrl + "ondemand/event_story/" \
                     "{}/scenario/{}.{}".format(event, chapter, extension)
 
-            preTitle = "-".join(chapter.split("_")[1:])
+            chapter_ids = chapter.split("_")[1:]
+            preTitle = "-".join(self.processChapterID(eventId, chapter_ids))
             jsonname = chapter + ".json"
 
         elif storyType == u"活动卡面":
